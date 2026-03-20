@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>SurveyEarn - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -176,7 +176,8 @@
         }
 
         /* Dropdown styles */
-        .notif-wrapper, .user-wrapper {
+        .notif-wrapper,
+        .user-wrapper {
             position: relative;
         }
 
@@ -248,28 +249,6 @@
             padding: 24px 32px;
         }
 
-        .alert {
-            background: #fff3e0;
-            border-left: 4px solid #f97316;
-            padding: 16px 20px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .alert span:first-child i {
-            margin-right: 8px;
-            color: #f97316;
-        }
-
-        .alert-link {
-            color: #4f46e5;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -337,6 +316,10 @@
             margin-bottom: 8px;
         }
 
+        .large-card p {
+            color: #6b7280;
+        }
+
         .large-card a {
             display: inline-block;
             margin-top: 20px;
@@ -367,13 +350,15 @@
             align-items: center;
             cursor: pointer;
             transition: 0.2s;
+            text-decoration: none;
+            color: #1f2937;
         }
 
         .quick-action:hover {
             background: #f3f4f6;
         }
 
-        /* Modal styles */
+        /* Modal styles - improved */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -398,29 +383,39 @@
             border-radius: 24px;
             width: 90%;
             max-width: 600px;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
-            padding: 24px;
+            padding: 0;
             position: relative;
+            box-shadow: 0 25px 40px -12px rgba(0,0,0,0.25);
         }
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            padding: 20px 24px;
             border-bottom: 1px solid #eef2f6;
-            padding-bottom: 12px;
+            background: #fff;
+            border-radius: 24px 24px 0 0;
         }
         .modal-header h3 {
             font-size: 1.25rem;
             font-weight: 600;
+            color: #1f2937;
         }
         .close-modal {
             background: none;
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: #6b7280;
+            color: #9ca3af;
+            transition: color 0.2s;
+        }
+        .close-modal:hover {
+            color: #4f46e5;
+        }
+        .modal-body {
+            padding: 24px;
         }
         .survey-question {
             margin-bottom: 24px;
@@ -428,74 +423,137 @@
         .question-text {
             font-weight: 500;
             margin-bottom: 12px;
+            color: #1f2937;
         }
         .options {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
         .option {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .option:hover {
+            background: #f3f4f6;
         }
         .option input {
             margin: 0;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
         }
-        .next-btn, .submit-btn {
-            background: linear-gradient(135deg,#4f46e5,#f97316);
+        .next-btn, .submit-btn, .back-btn {
+            background: linear-gradient(135deg, #4f46e5, #f97316);
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 12px;
             cursor: pointer;
-            font-weight: 500;
-            margin-top: 20px;
+            font-weight: 600;
+            margin-top: 24px;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .back-btn {
+            background: #f3f4f6;
+            color: #4b5563;
+            margin-top: 12px;
+        }
+        .next-btn:hover, .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79,70,229,0.3);
         }
         .subscription-plan {
             border: 1px solid #eef2f6;
             border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s;
+            position: relative;
         }
-        .subscription-plan.selected {
+        .subscription-plan:hover {
             border-color: #4f46e5;
             background: #f9fafb;
         }
+        .subscription-plan.selected {
+            border-color: #4f46e5;
+            background: linear-gradient(135deg, rgba(79,70,229,0.05), rgba(249,115,22,0.05));
+        }
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 12px;
+        }
         .plan-name {
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: 700;
+            font-size: 1.25rem;
         }
         .plan-price {
-            color: #4f46e5;
+            font-size: 1.1rem;
             font-weight: 600;
+            color: #4f46e5;
         }
-        .plan-desc {
+        .plan-features {
+            list-style: none;
+            margin-top: 12px;
+        }
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 0.85rem;
-            color: #6b7280;
-            margin-top: 4px;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+        .plan-features li i {
+            width: 18px;
+            font-size: 12px;
+            color: #10b981;
         }
         .mpesa-input {
             margin: 16px 0;
         }
         .mpesa-input input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #eef2f6;
             border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .mpesa-input input:focus {
+            border-color: #4f46e5;
+        }
+        .btn {
+            background: linear-gradient(135deg, #4f46e5, #f97316);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79,70,229,0.3);
         }
 
-        @media (max-width: 1000px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .two-col {
-                grid-template-columns: 1fr;
-            }
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
             .sidebar {
-                width: 80px;
+                width: 70px;
             }
             .sidebar .logo span,
             .sidebar .nav-item span,
@@ -505,26 +563,110 @@
                 display: none;
             }
             .sidebar .logo i {
-                font-size: 28px;
+                font-size: 24px;
                 margin: 0 auto;
             }
             .nav-item {
                 justify-content: center;
+                padding: 12px;
             }
             .nav-item i {
                 margin: 0;
+                font-size: 20px;
             }
             .sidebar-header {
-                padding: 24px 12px;
+                padding: 20px 0;
                 text-align: center;
             }
+            .sidebar-footer {
+                padding: 16px 8px;
+            }
             .earn-card {
-                padding: 12px;
+                padding: 8px;
                 text-align: center;
             }
             .earn-card button {
                 width: auto;
-                padding: 6px 12px;
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            .topbar {
+                padding: 12px 16px;
+            }
+            .page-title h1 {
+                font-size: 20px;
+            }
+            .page-title p {
+                font-size: 12px;
+            }
+            .user-area {
+                gap: 12px;
+            }
+            .avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+            .content {
+                padding: 16px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            .stat-card {
+                padding: 16px;
+            }
+            .stat-card h3 {
+                font-size: 22px;
+            }
+            .stat-card p {
+                font-size: 12px;
+            }
+            .two-col {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .large-card {
+                padding: 24px;
+            }
+            .large-card i {
+                font-size: 36px;
+            }
+            .large-card h3 {
+                font-size: 18px;
+            }
+            .side-card {
+                padding: 20px;
+            }
+            .quick-action {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                gap: 8px;
+            }
+            .stat-card {
+                padding: 12px;
+            }
+            .stat-card h3 {
+                font-size: 18px;
+            }
+            .stat-card p {
+                font-size: 11px;
+            }
+            .large-card {
+                padding: 20px;
+            }
+            .modal-container {
+                width: 95%;
+            }
+            .modal-body {
+                padding: 16px;
             }
         }
     </style>
@@ -562,7 +704,7 @@
         <div class="sidebar-footer">
             <div class="earn-card">
                 <p>Earned so far</p>
-                <h3>Ksh 0</h3>
+                <h3 id="earnCardAmount">Ksh 0</h3>
                 <button>Withdraw</button>
             </div>
         </div>
@@ -572,10 +714,9 @@
         <div class="topbar">
             <div class="page-title">
                 <h1>Dashboard</h1>
-                <p>Welcome back, Ekure-Adzape Miracle</p>
+                <p>Welcome back, <span id="userNameDisplay">User</span></p>
             </div>
             <div class="user-area">
-                <!-- Notifications -->
                 <div class="notif-wrapper">
                     <i class="far fa-bell" id="notifBtn"></i>
                     <div class="dropdown notif-dropdown" id="notifMenu">
@@ -586,49 +727,47 @@
                         </div>
                     </div>
                 </div>
-                <!-- User -->
                 <div class="user-wrapper">
                     <div class="avatar" id="userBtn">EM</div>
                     <div class="dropdown user-dropdown" id="userMenu">
                         <div class="user-info">
-                            <strong>Ekure-Adzape Miracle</strong>
-                            <span>goapnaair@gmail.com</span>
+                            <strong id="userNameStrong">Ekure-Adzape Miracle</strong>
+                            <span id="userEmailSpan">goapnaair@gmail.com</span>
                         </div>
-                        <div class="dropdown-item"><i class="fas fa-cog"></i> Settings</div>
-                        <div class="dropdown-item logout"><i class="fas fa-sign-out-alt"></i> Sign out</div>
+                        <div class="dropdown-item" id="settingsMenuItem">
+                            <i class="fas fa-cog"></i> Settings
+                        </div>
+                        <div class="dropdown-item logout" id="logoutMenuItem">
+                            <i class="fas fa-sign-out-alt"></i> Sign out
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="content">
-            <div class="alert">
-                <span><i class="fas fa-exclamation-triangle"></i> Add your M-PESA number to receive payments</span>
-                <span class="alert-link">Add Now →</span>
-            </div>
-
             <div class="stats-grid">
                 <div class="stat-card">
                     <p>Total Earnings</p>
-                    <h3>Ksh 0</h3>
+                    <h3 id="totalEarnings">Ksh 0</h3>
                 </div>
                 <div class="stat-card">
                     <p>Surveys Completed</p>
-                    <h3>0</h3>
+                    <h3 id="surveysCompleted">0</h3>
                 </div>
                 <div class="stat-card">
                     <p>Referral Earnings</p>
-                    <h3>Ksh 0</h3>
+                    <h3 id="referralEarnings">Ksh 0</h3>
                 </div>
                 <div class="stat-card">
                     <p>Available Balance</p>
-                    <h3>Ksh 0</h3>
+                    <h3 id="availableBalance">Ksh 0</h3>
                     <button>Withdraw</button>
                 </div>
             </div>
 
             <div class="two-col">
-                <div class="large-card">
+                <div class="large-card" id="earningsMessageCard">
                     <i class="fas fa-dollar-sign"></i>
                     <h3>No earnings yet</h3>
                     <p>Complete surveys to start earning rewards</p>
@@ -636,15 +775,15 @@
                 </div>
                 <div class="side-card">
                     <h3>Quick Actions</h3>
-                    <a href="surveys.html" class="quick-action" style="text-decoration: none;">
+                    <a href="surveys.html" class="quick-action">
                         <span>Take Surveys</span>
                         <i class="fas fa-arrow-right"></i>
                     </a>
-                    <a href="settings.html" class="quick-action" style="text-decoration: none;">
+                    <a href="settings.html" class="quick-action">
                         <span>Settings</span>
                         <i class="fas fa-arrow-right"></i>
                     </a>
-                    <a href="referrals.html" class="quick-action" style="text-decoration: none;">
+                    <a href="referrals.html" class="quick-action">
                         <span>Invite Friends</span>
                         <i class="fas fa-arrow-right"></i>
                     </a>
@@ -656,16 +795,22 @@
     <!-- First Survey Modal -->
     <div id="firstSurveyModal" class="modal-overlay">
         <div class="modal-container">
-            <div class="modal-header"><h3>Welcome! Complete your first survey</h3><button class="close-modal" onclick="closeModal('firstSurveyModal')">&times;</button></div>
-            <div id="surveyContent"></div>
+            <div class="modal-header">
+                <h3>Welcome! Complete your first survey</h3>
+                <button class="close-modal" onclick="closeModal('firstSurveyModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="surveyContent"></div>
         </div>
     </div>
 
-    <!-- Subscription Modal -->
+    <!-- Subscription Modal (two-step) -->
     <div id="subscriptionModal" class="modal-overlay">
         <div class="modal-container">
-            <div class="modal-header"><h3>Choose a Subscription Plan</h3><button class="close-modal" onclick="closeModal('subscriptionModal')">&times;</button></div>
-            <div id="subscriptionContent"></div>
+            <div class="modal-header">
+                <h3 id="subscriptionModalTitle">Choose a Subscription Plan</h3>
+                <button class="close-modal" onclick="closeModal('subscriptionModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="subscriptionContent"></div>
         </div>
     </div>
 
@@ -688,18 +833,37 @@
         }
 
         function updateDashboardUI(user) {
-            document.querySelectorAll('.stat-card h3')[0].innerText = `Ksh ${user.earningsTotal}`;
-            document.querySelectorAll('.stat-card h3')[1].innerText = user.surveysCompleted;
-            document.querySelectorAll('.stat-card h3')[2].innerText = `Ksh ${user.referralEarnings}`;
-            document.querySelectorAll('.stat-card h3')[3].innerText = `Ksh ${user.balance}`;
-            document.querySelector('.earn-card h3').innerText = `Ksh ${user.earningsTotal}`;
-            const initials = user.name.split(' ').map(n=>n[0]).join('').toUpperCase();
+            document.getElementById('totalEarnings').innerText = `Ksh ${user.earningsTotal}`;
+            document.getElementById('surveysCompleted').innerText = user.surveysCompleted;
+            document.getElementById('referralEarnings').innerText = `Ksh ${user.referralEarnings}`;
+            document.getElementById('availableBalance').innerText = `Ksh ${user.balance}`;
+            document.getElementById('earnCardAmount').innerText = `Ksh ${user.earningsTotal}`;
+            const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
             document.querySelector('.avatar').innerText = initials;
-            document.querySelector('.user-name').innerText = user.name.split(' ')[0];
-            document.querySelector('.page-title p').innerText = `Welcome back, ${user.name}`;
+            document.getElementById('userNameStrong').innerText = user.name;
+            document.getElementById('userEmailSpan').innerText = user.email;
+            document.getElementById('userNameDisplay').innerText = user.name.split(' ')[0];
+
+            // Update large card based on earnings
+            const earningsCard = document.getElementById('earningsMessageCard');
+            if (user.earningsTotal > 0) {
+                earningsCard.innerHTML = `
+                    <i class="fas fa-chart-line"></i>
+                    <h3>You've earned Ksh ${user.earningsTotal}!</h3>
+                    <p>Keep going to reach your goals</p>
+                    <a href="surveys.html">Take More Surveys →</a>
+                `;
+            } else {
+                earningsCard.innerHTML = `
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>No earnings yet</h3>
+                    <p>Complete surveys to start earning rewards</p>
+                    <a href="surveys.html">Browse Available Surveys →</a>
+                `;
+            }
         }
 
-        // First survey logic
+        // First survey logic (unchanged)
         const firstSurveyQuestions = [
             { text: "How often do you use mobile money services?", options: ["Daily", "Weekly", "Monthly", "Rarely"] },
             { text: "What is your preferred payment method for online services?", options: ["M-Pesa", "Credit Card", "PayPal", "Bank Transfer"] },
@@ -722,7 +886,12 @@
                     const checked = answers[currentQuestion] === opt ? 'checked' : '';
                     html += `<label class="option"><input type="radio" name="q${currentQuestion}" value="${opt}" ${checked}> ${opt}</label>`;
                 });
-                html += `</div>${currentQuestion < firstSurveyQuestions.length-1 ? '<button class="next-btn" onclick="nextFirstQuestion()">Next</button>' : '<button class="submit-btn" onclick="submitFirstSurvey()">Complete Survey</button>'}</div>`;
+                html += `</div>`;
+                if (currentQuestion < firstSurveyQuestions.length - 1) {
+                    html += `<button class="next-btn" onclick="nextFirstQuestion()">Next</button>`;
+                } else {
+                    html += `<button class="submit-btn" onclick="submitFirstSurvey()">Complete Survey</button>`;
+                }
                 container.innerHTML = html;
                 modal.classList.add('active');
             }
@@ -730,7 +899,10 @@
 
         function nextFirstQuestion() {
             const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
-            if (!selected) { alert('Please select an answer'); return; }
+            if (!selected) {
+                alert('Please select an answer');
+                return;
+            }
             answers[currentQuestion] = selected.value;
             currentQuestion++;
             showFirstSurvey();
@@ -738,7 +910,10 @@
 
         function submitFirstSurvey() {
             const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
-            if (!selected) { alert('Please select an answer'); return; }
+            if (!selected) {
+                alert('Please select an answer');
+                return;
+            }
             answers[currentQuestion] = selected.value;
 
             const user = getCurrentUser();
@@ -757,62 +932,117 @@
             answers = [];
         }
 
-        // Subscription modal logic
+        // Subscription modal - two-step
         let pendingAction = null;
+        let selectedPlan = null;
+
         function showSubscriptionModal(action) {
             pendingAction = action;
+            selectedPlan = null;
+            showPlanSelection();
+        }
+
+        function showPlanSelection() {
             const modal = document.getElementById('subscriptionModal');
             const container = document.getElementById('subscriptionContent');
+            document.getElementById('subscriptionModalTitle').innerText = 'Choose a Subscription Plan';
             container.innerHTML = `
-                <div style="margin-bottom:16px;"><p>Choose a plan to unlock premium features:</p></div>
+                <div style="margin-bottom: 20px;">
+                    <p>Select a plan that fits your needs. All plans include withdrawals after reaching Ksh 500.</p>
+                </div>
                 <div class="subscription-plan" data-plan="basic">
-                    <div class="plan-name">Basic</div>
-                    <div class="plan-price">Ksh 99 / month</div>
-                    <div class="plan-desc">Free surveys, withdrawals</div>
+                    <div class="plan-header">
+                        <span class="plan-name">Basic</span>
+                        <span class="plan-price">Ksh 99 / month</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check-circle"></i> Access to free surveys</li>
+                        <li><i class="fas fa-check-circle"></i> Fast withdrawals</li>
+                        <li><i class="fas fa-check-circle"></i> Standard support</li>
+                    </ul>
                 </div>
                 <div class="subscription-plan" data-plan="standard">
-                    <div class="plan-name">Standard</div>
-                    <div class="plan-price">Ksh 299 / month</div>
-                    <div class="plan-desc">Free surveys, standard surveys, withdrawals</div>
+                    <div class="plan-header">
+                        <span class="plan-name">Standard</span>
+                        <span class="plan-price">Ksh 299 / month</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check-circle"></i> All Basic benefits</li>
+                        <li><i class="fas fa-check-circle"></i> Access to standard surveys (Ksh 350–499)</li>
+                        <li><i class="fas fa-check-circle"></i> Priority support</li>
+                    </ul>
                 </div>
                 <div class="subscription-plan" data-plan="premium">
-                    <div class="plan-name">Premium</div>
-                    <div class="plan-price">Ksh 499 / month</div>
-                    <div class="plan-desc">All surveys, priority support, higher rewards</div>
+                    <div class="plan-header">
+                        <span class="plan-name">Premium</span>
+                        <span class="plan-price">Ksh 499 / month</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check-circle"></i> All Standard benefits</li>
+                        <li><i class="fas fa-check-circle"></i> Access to premium surveys (up to Ksh 760)</li>
+                        <li><i class="fas fa-check-circle"></i> Priority support + early access</li>
+                        <li><i class="fas fa-check-circle"></i> Higher earning potential</li>
+                    </ul>
                 </div>
-                <div class="mpesa-input"><input type="text" id="mpesaNumber" placeholder="M-Pesa number (e.g., 07XXXXXXXX)" /></div>
-                <button class="btn" id="confirmSubscription">Subscribe & Continue</button>
+                <button class="next-btn" id="nextToMpesa">Continue</button>
             `;
             document.querySelectorAll('.subscription-plan').forEach(plan => {
                 plan.addEventListener('click', () => {
                     document.querySelectorAll('.subscription-plan').forEach(p => p.classList.remove('selected'));
                     plan.classList.add('selected');
+                    selectedPlan = plan.getAttribute('data-plan');
                 });
             });
+            document.getElementById('nextToMpesa').addEventListener('click', () => {
+                if (!selectedPlan) {
+                    alert('Please select a plan');
+                    return;
+                }
+                showMpesaStep();
+            });
+            modal.classList.add('active');
+        }
+
+        function showMpesaStep() {
+            const container = document.getElementById('subscriptionContent');
+            document.getElementById('subscriptionModalTitle').innerText = 'Complete Subscription';
+            container.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <p>You've selected <strong>${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)}</strong> plan.</p>
+                    <p>Enter your M-Pesa number to receive payment notifications and withdrawals.</p>
+                </div>
+                <div class="mpesa-input">
+                    <input type="text" id="mpesaNumber" placeholder="M-Pesa number (e.g., 07XXXXXXXX)" />
+                </div>
+                <button class="btn" id="confirmSubscription">Subscribe Now</button>
+                <button class="back-btn" id="backToPlans">← Back to plans</button>
+            `;
             document.getElementById('confirmSubscription').addEventListener('click', () => {
-                const selected = document.querySelector('.subscription-plan.selected');
-                if (!selected) { alert('Select a plan'); return; }
                 const mpesa = document.getElementById('mpesaNumber').value.trim();
-                if (!mpesa || !/^07\d{8}$/.test(mpesa)) { alert('Enter a valid M-Pesa number (07XXXXXXXX)'); return; }
-                const plan = selected.getAttribute('data-plan');
+                if (!mpesa || !/^07\d{8}$/.test(mpesa)) {
+                    alert('Enter a valid M-Pesa number (07XXXXXXXX)');
+                    return;
+                }
                 const user = getCurrentUser();
                 if (user) {
-                    user.subscription = { plan, expiry: Date.now() + 30*24*60*60*1000 };
+                    user.subscription = { plan: selectedPlan, expiry: Date.now() + 30*24*60*60*1000 };
                     user.mpesaNumber = mpesa;
                     updateUser(user);
                     closeModal('subscriptionModal');
                     if (pendingAction === 'withdraw') {
                         if (user.balance >= 500) {
                             alert(`Withdrawal of Ksh ${user.balance} to ${mpesa} initiated. (Demo)`);
-                            // In real app, you'd deduct balance
                         } else {
                             alert('Insufficient balance for withdrawal.');
                         }
                     }
                     pendingAction = null;
+                    selectedPlan = null;
                 }
             });
-            modal.classList.add('active');
+            document.getElementById('backToPlans').addEventListener('click', () => {
+                showPlanSelection();
+            });
         }
 
         function closeModal(id) {
@@ -839,6 +1069,16 @@
             if (!userBtn.contains(event.target) && !userMenu.contains(event.target)) userMenu.classList.remove('show');
         });
 
+        // Settings and Logout
+        document.getElementById('settingsMenuItem').addEventListener('click', () => {
+            window.location.href = 'settings.html';
+        });
+        document.getElementById('logoutMenuItem').addEventListener('click', () => {
+            sessionStorage.removeItem('loggedInUser');
+            localStorage.removeItem('rememberedUser');
+            window.location.href = 'login.html';
+        });
+
         // Withdraw button handlers
         document.querySelectorAll('.stat-card button, .earn-card button').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -850,30 +1090,23 @@
             });
         });
 
-        // Alert link (add M-Pesa)
-        document.querySelector('.alert-link').addEventListener('click', () => {
-            const user = getCurrentUser();
-            if (user && !user.mpesaNumber) {
-                const mpesa = prompt('Enter your M-Pesa number (e.g., 07XXXXXXXX):');
-                if (mpesa && /^07\d{8}$/.test(mpesa)) {
-                    user.mpesaNumber = mpesa;
-                    updateUser(user);
-                    alert('M-Pesa number saved!');
-                } else if (mpesa) alert('Invalid number format.');
-            } else if (user && user.mpesaNumber) {
-                alert(`Your M-Pesa number is ${user.mpesaNumber}`);
-            } else {
-                alert('Please login first.');
-            }
-        });
-
         // Check user and first survey
         const user = getCurrentUser();
-        if (!user) window.location.href = 'login.html';
-        else {
+        if (!user) {
+            window.location.href = 'login.html';
+        } else {
             updateDashboardUI(user);
-            if (!user.completedSurveys.includes('first_survey')) showFirstSurvey();
+            if (!user.completedSurveys.includes('first_survey')) {
+                setTimeout(() => {
+                    showFirstSurvey();
+                }, 500);
+            }
         }
+
+        // Make functions globally available for modal buttons
+        window.closeModal = closeModal;
+        window.nextFirstQuestion = nextFirstQuestion;
+        window.submitFirstSurvey = submitFirstSurvey;
     </script>
 </body>
 </html>
