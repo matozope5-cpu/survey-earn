@@ -30,6 +30,7 @@
             flex-direction: column;
             height: 100vh;
             overflow-y: auto;
+            transition: width 0.2s;
         }
 
         .sidebar-header {
@@ -358,6 +359,30 @@
             background: #f3f4f6;
         }
 
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
         /* Modal styles - improved */
         .modal-overlay {
             position: fixed;
@@ -553,13 +578,10 @@
         /* Mobile optimizations */
         @media (max-width: 768px) {
             .sidebar {
-                width: 70px;
+                width: 60px;
             }
             .sidebar .logo span,
-            .sidebar .nav-item span,
-            .sidebar .earn-card p,
-            .sidebar .earn-card h3,
-            .sidebar .earn-card button {
+            .sidebar .nav-item span {
                 display: none;
             }
             .sidebar .logo i {
@@ -585,10 +607,17 @@
                 padding: 8px;
                 text-align: center;
             }
+            .earn-card p {
+                display: none;
+            }
+            .earn-card h3 {
+                font-size: 18px;
+                margin-bottom: 8px;
+            }
             .earn-card button {
                 width: auto;
-                padding: 6px 10px;
-                font-size: 12px;
+                padding: 4px 8px;
+                font-size: 11px;
             }
             .topbar {
                 padding: 12px 16px;
@@ -792,6 +821,9 @@
         </div>
     </div>
 
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
     <!-- First Survey Modal -->
     <div id="firstSurveyModal" class="modal-overlay">
         <div class="modal-container">
@@ -815,6 +847,16 @@
     </div>
 
     <script>
+        // Toast notification helper
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
         // User functions
         function getCurrentUser() {
             const session = sessionStorage.getItem('loggedInUser');
@@ -863,7 +905,7 @@
             }
         }
 
-        // First survey logic (unchanged)
+        // First survey logic
         const firstSurveyQuestions = [
             { text: "How often do you use mobile money services?", options: ["Daily", "Weekly", "Monthly", "Rarely"] },
             { text: "What is your preferred payment method for online services?", options: ["M-Pesa", "Credit Card", "PayPal", "Bank Transfer"] },
@@ -900,7 +942,7 @@
         function nextFirstQuestion() {
             const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
             if (!selected) {
-                alert('Please select an answer');
+                showToast('Please select an answer');
                 return;
             }
             answers[currentQuestion] = selected.value;
@@ -911,7 +953,7 @@
         function submitFirstSurvey() {
             const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
             if (!selected) {
-                alert('Please select an answer');
+                showToast('Please select an answer');
                 return;
             }
             answers[currentQuestion] = selected.value;
@@ -925,7 +967,7 @@
                 user.completedSurveys.push('first_survey');
                 updateUser(user);
                 updateDashboardUI(user);
-                alert(`Great! You earned Ksh ${reward} for completing your first survey.`);
+                showToast(`Great! You earned Ksh ${reward} for completing your first survey.`);
             }
             closeModal('firstSurveyModal');
             currentQuestion = 0;
@@ -995,7 +1037,7 @@
             });
             document.getElementById('nextToMpesa').addEventListener('click', () => {
                 if (!selectedPlan) {
-                    alert('Please select a plan');
+                    showToast('Please select a plan');
                     return;
                 }
                 showMpesaStep();
@@ -1020,7 +1062,7 @@
             document.getElementById('confirmSubscription').addEventListener('click', () => {
                 const mpesa = document.getElementById('mpesaNumber').value.trim();
                 if (!mpesa || !/^07\d{8}$/.test(mpesa)) {
-                    alert('Enter a valid M-Pesa number (07XXXXXXXX)');
+                    showToast('Enter a valid M-Pesa number (07XXXXXXXX)');
                     return;
                 }
                 const user = getCurrentUser();
@@ -1031,9 +1073,9 @@
                     closeModal('subscriptionModal');
                     if (pendingAction === 'withdraw') {
                         if (user.balance >= 500) {
-                            alert(`Withdrawal of Ksh ${user.balance} to ${mpesa} initiated. (Demo)`);
+                            showToast(`Withdrawal of Ksh ${user.balance} to ${mpesa} initiated. (Demo)`);
                         } else {
-                            alert('Insufficient balance for withdrawal.');
+                            showToast('Insufficient balance for withdrawal.');
                         }
                     }
                     pendingAction = null;
@@ -1084,9 +1126,12 @@
             btn.addEventListener('click', () => {
                 const user = getCurrentUser();
                 if (!user) return;
-                if (user.balance < 500) { alert('Minimum withdrawal is Ksh 500'); return; }
+                if (user.balance < 500) {
+                    showToast('Minimum withdrawal is Ksh 500');
+                    return;
+                }
                 if (!user.subscription) showSubscriptionModal('withdraw');
-                else alert(`Withdrawal of Ksh ${user.balance} would be processed. (Demo)`);
+                else showToast(`Withdrawal of Ksh ${user.balance} would be processed. (Demo)`);
             });
         });
 
