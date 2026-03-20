@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SurveyEarn - Create Account</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, #5a4bff, #3a2ca3);
+}
+
+.container {
+    text-align: center;
+    width: 100%;
+}
+
+.logo {
+    color: white;
+    margin-bottom: 10px;
+}
+
+.logo i {
+    font-size: 28px;
+    margin-right: 8px;
+}
+
+.logo span {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+h1 {
+    color: white;
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #ddd;
+    margin-bottom: 30px;
+}
+
+.subtitle a {
+    color: #ff9d5c;
+    text-decoration: none;
+}
+
+.card {
+    background: #e6e6e6;
+    width: 420px;
+    margin: auto;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+label {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.input-box {
+    display: flex;
+    align-items: center;
+    background: #f2f2f2;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.input-box i {
+    margin-right: 10px;
+    color: #888;
+}
+
+.input-box input {
+    border: none;
+    outline: none;
+    width: 100%;
+    background: transparent;
+    font-size: 14px;
+}
+
+.eye {
+    cursor: pointer;
+    color: #888;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(to right, #6a5cff, #ff7a18);
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn:hover {
+    opacity: 0.95;
+}
+</style>
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body>
+
+<div class="container">
+
+    <div class="logo">
+        <i class="fa-solid fa-clipboard-list"></i>
+        <span>SurveyEarn</span>
+    </div>
+
+    <h1>Create your account</h1>
+    <div class="subtitle">
+        Already have an account? <a href="#">Sign in</a>
+    </div>
+
+    <div class="card">
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <div class="input-box">
+                <i class="fa-regular fa-user"></i>
+                <input type="text" placeholder="John Doe">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Email address</label>
+            <div class="input-box">
+                <i class="fa-regular fa-envelope"></i>
+                <input type="email" placeholder="you@example.com">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <div class="input-box">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" placeholder="••••••••">
+                <i class="fa-regular fa-eye eye"></i>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <div class="input-box">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" placeholder="••••••••">
+                <i class="fa-regular fa-eye eye"></i>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Referral Code (Optional)</label>
+            <div class="input-box">
+                <i class="fa-solid fa-gift"></i>
+                <input type="text" placeholder="Enter referral code">
+            </div>
+        </div>
+
+        <button class="btn">
+            Create Account <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+    </div>
+
+</div>
+
+</body>
+</html>

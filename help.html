@@ -1,0 +1,114 @@
+<!-- help.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SurveyEarn - Help Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* base styles */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#f4f6fa; display:flex; height:100vh; overflow:hidden; }
+        .sidebar { width:280px; background:#fff; border-right:1px solid #eef2f6; display:flex; flex-direction:column; height:100vh; overflow-y:auto; }
+        .sidebar-header { padding:24px 24px 0; margin-bottom:32px; }
+        .logo { display:flex; align-items:center; gap:10px; font-size:22px; font-weight:700; background:linear-gradient(135deg,#4f46e5,#f97316); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .logo i { font-size:24px; background:linear-gradient(135deg,#4f46e5,#f97316); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .nav-menu { flex:1; padding:0 16px; }
+        .nav-item { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:12px; color:#4b5563; font-weight:500; transition:all 0.2s; margin-bottom:6px; text-decoration:none; }
+        .nav-item:hover { background:#f3f4f6; color:#1f2937; }
+        .nav-item.active { background:linear-gradient(135deg,rgba(79,70,229,0.1),rgba(249,115,22,0.1)); color:#4f46e5; }
+        .sidebar-footer { padding:24px 16px; border-top:1px solid #eef2f6; margin-top:auto; }
+        .earn-card { background:linear-gradient(135deg,#4f46e5,#f97316); border-radius:16px; padding:20px; color:#fff; }
+        .earn-card p { font-size:14px; opacity:0.9; margin-bottom:8px; }
+        .earn-card h3 { font-size:28px; font-weight:700; margin-bottom:12px; }
+        .earn-card button { width:100%; background:#fff; border:none; padding:10px; border-radius:10px; font-weight:600; color:#4f46e5; cursor:pointer; }
+        .main { flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+        .topbar { background:#fff; padding:16px 32px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eef2f6; position:sticky; top:0; z-index:5; }
+        .page-title h1 { font-size:24px; font-weight:600; color:#1f2937; }
+        .page-title p { color:#6b7280; font-size:14px; margin-top:4px; }
+        .user-area { display:flex; align-items:center; gap:24px; }
+        .avatar { width:42px; height:42px; background:linear-gradient(135deg,#4f46e5,#f97316); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; }
+        .user-name { font-weight:500; color:#1f2937; }
+        .content { flex:1; overflow-y:auto; padding:24px 32px; }
+        .search-box { margin-bottom:24px; }
+        .search-box input { width:100%; padding:14px 20px; border-radius:40px; border:1px solid #eef2f6; background:#fff; font-size:16px; outline:none; transition:0.2s; }
+        .search-box input:focus { border-color:#4f46e5; }
+        .categories { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:32px; }
+        .category { padding:8px 20px; background:#fff; border-radius:40px; font-size:14px; font-weight:500; cursor:pointer; border:1px solid #eef2f6; transition:0.2s; }
+        .category.active { background:#4f46e5; color:#fff; border-color:#4f46e5; }
+        .faq-list { margin-bottom:32px; }
+        .faq-item { background:#fff; border-radius:20px; margin-bottom:12px; overflow:hidden; border:1px solid #eef2f6; }
+        .faq-question { padding:20px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-weight:500; }
+        .faq-answer { padding:0 20px 20px; color:#6b7280; line-height:1.5; display:none; }
+        .faq-item.active .faq-answer { display:block; }
+        .support-cta { background:linear-gradient(135deg,#4f46e5,#f97316); border-radius:24px; padding:32px; color:#fff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+        .support-cta button { background:#fff; border:none; padding:12px 24px; border-radius:40px; font-weight:600; color:#4f46e5; cursor:pointer; }
+        @media (max-width:1000px){ .sidebar{width:80px} .sidebar .logo span,.sidebar .nav-item span,.sidebar .earn-card p,.sidebar .earn-card h3,.sidebar .earn-card button{display:none} .sidebar .logo i{font-size:28px;margin:0 auto} .nav-item{justify-content:center} .nav-item i{margin:0} }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header"><div class="logo"><i class="fas fa-clipboard-list"></i><span>SurveyEarn</span></div></div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+            <a href="surveys.html" class="nav-item"><i class="fas fa-list"></i><span>Surveys</span></a>
+            <a href="referrals.html" class="nav-item"><i class="fas fa-user-friends"></i><span>Referrals</span></a>
+            <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+            <a href="help.html" class="nav-item active"><i class="fas fa-question-circle"></i><span>Help</span></a>
+        </div>
+        <div class="sidebar-footer"><div class="earn-card"><p>Earned so far</p><h3>Ksh 0</h3><button>Withdraw</button></div></div>
+    </div>
+    <div class="main">
+        <div class="topbar">
+            <div class="page-title"><h1>Help Center</h1><p>Find answers or contact support</p></div>
+            <div class="user-area"><i class="far fa-bell"></i><div class="avatar">EM</div><span class="user-name">Miracle</span></div>
+        </div>
+        <div class="content">
+            <div class="search-box"><input type="text" placeholder="Search for answers..."></div>
+            <div class="categories">
+                <div class="category active">All</div>
+                <div class="category">Getting Started</div>
+                <div class="category">Earnings</div>
+                <div class="category">Survey Taking</div>
+                <div class="category">Account</div>
+                <div class="category">Referrals</div>
+                <div class="category">Technical</div>
+                <div class="category">Payments</div>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item active"><div class="faq-question">How do I start taking surveys? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Log in to your account and go to the Surveys page. Click "Take Survey" on any available survey and follow the instructions. Earnings are added automatically upon completion.</div></div>
+                <div class="faq-item"><div class="faq-question">What are the requirements to join SurveyPlus? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Anyone aged 18+ with a valid email address can join. Registration is free.</div></div>
+                <div class="faq-item"><div class="faq-question">How much can I earn per survey? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Survey rewards range from Ksh 50 to Ksh 200 depending on length and complexity. System surveys start at Ksh 70.</div></div>
+                <div class="faq-item"><div class="faq-question">When and how can I withdraw my earnings? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Withdrawals are available once you reach a minimum of Ksh 500. You can withdraw via M-Pesa, PayPal, or bank transfer. Payments are processed within 24-48 hours.</div></div>
+                <div class="faq-item"><div class="faq-question">Why do I have to wait 7 seconds between questions? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">This is a quality measure to prevent random clicking and ensure thoughtful responses. It helps maintain high data quality for our clients.</div></div>
+                <div class="faq-item"><div class="faq-question">What happens if I lose internet connection during a survey? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">If you reconnect within a few minutes, you may be able to resume. Otherwise, the survey may be lost. We recommend a stable connection before starting.</div></div>
+                <div class="faq-item"><div class="faq-question">How do I update my profile information? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Go to Settings and click on Profile Information. You can edit your name, email, and other details. Keep your profile complete to receive relevant surveys.</div></div>
+                <div class="faq-item"><div class="faq-question">Can I have multiple accounts? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">No, each user is allowed only one account. Duplicate accounts may result in suspension.</div></div>
+                <div class="faq-item"><div class="faq-question">How does the referral program work? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Share your unique referral code. When a friend signs up and completes their first survey, you both earn Ksh 200.</div></div>
+            </div>
+            <div class="support-cta">
+                <div><h3>Still need help?</h3><p>Our support team is here to assist you</p></div>
+                <button>Contact Support</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // FAQ toggle
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.querySelector('.faq-question').addEventListener('click', () => {
+                item.classList.toggle('active');
+            });
+        });
+        // category filter (demo)
+        document.querySelectorAll('.category').forEach(cat => {
+            cat.addEventListener('click', () => {
+                document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
+                cat.classList.add('active');
+                // Here you would filter FAQs – demo only
+            });
+        });
+    </script>
+</body>
+</html>

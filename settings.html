@@ -1,0 +1,88 @@
+<!-- settings.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SurveyEarn - Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* same base styles */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#f4f6fa; display:flex; height:100vh; overflow:hidden; }
+        .sidebar { width:280px; background:#fff; border-right:1px solid #eef2f6; display:flex; flex-direction:column; height:100vh; overflow-y:auto; }
+        .sidebar-header { padding:24px 24px 0; margin-bottom:32px; }
+        .logo { display:flex; align-items:center; gap:10px; font-size:22px; font-weight:700; background:linear-gradient(135deg,#4f46e5,#f97316); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .logo i { font-size:24px; background:linear-gradient(135deg,#4f46e5,#f97316); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .nav-menu { flex:1; padding:0 16px; }
+        .nav-item { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:12px; color:#4b5563; font-weight:500; transition:all 0.2s; margin-bottom:6px; text-decoration:none; }
+        .nav-item:hover { background:#f3f4f6; color:#1f2937; }
+        .nav-item.active { background:linear-gradient(135deg,rgba(79,70,229,0.1),rgba(249,115,22,0.1)); color:#4f46e5; }
+        .sidebar-footer { padding:24px 16px; border-top:1px solid #eef2f6; margin-top:auto; }
+        .earn-card { background:linear-gradient(135deg,#4f46e5,#f97316); border-radius:16px; padding:20px; color:#fff; }
+        .earn-card p { font-size:14px; opacity:0.9; margin-bottom:8px; }
+        .earn-card h3 { font-size:28px; font-weight:700; margin-bottom:12px; }
+        .earn-card button { width:100%; background:#fff; border:none; padding:10px; border-radius:10px; font-weight:600; color:#4f46e5; cursor:pointer; }
+        .main { flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+        .topbar { background:#fff; padding:16px 32px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eef2f6; position:sticky; top:0; z-index:5; }
+        .page-title h1 { font-size:24px; font-weight:600; color:#1f2937; }
+        .user-area { display:flex; align-items:center; gap:24px; }
+        .avatar { width:42px; height:42px; background:linear-gradient(135deg,#4f46e5,#f97316); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; }
+        .user-name { font-weight:500; color:#1f2937; }
+        .content { flex:1; overflow-y:auto; padding:24px 32px; }
+        .setting-section { background:#fff; border-radius:24px; padding:24px; margin-bottom:24px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+        .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+        .section-header h3 { font-size:18px; font-weight:600; }
+        .btn-outline { background:#4f46e5; color:#fff; border:none; padding:8px 16px; border-radius:10px; font-weight:500; cursor:pointer; transition:0.2s; }
+        .profile-info { display:flex; gap:24px; align-items:center; flex-wrap:wrap; }
+        .info-item { display:flex; align-items:center; gap:12px; background:#f9fafb; padding:12px 20px; border-radius:16px; min-width:200px; }
+        .info-item i { font-size:20px; color:#4f46e5; }
+        .empty-payment { text-align:center; padding:32px; background:#f9fafb; border-radius:16px; color:#6b7280; }
+        .empty-payment i { font-size:40px; margin-bottom:12px; opacity:0.5; }
+        .balance-box { background:#f9fafb; padding:20px; border-radius:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+        .security-item { display:flex; align-items:center; gap:16px; background:#f9fafb; padding:16px; border-radius:16px; }
+        @media (max-width:1000px){ .sidebar{width:80px} .sidebar .logo span,.sidebar .nav-item span,.sidebar .earn-card p,.sidebar .earn-card h3,.sidebar .earn-card button{display:none} .sidebar .logo i{font-size:28px;margin:0 auto} .nav-item{justify-content:center} .nav-item i{margin:0} }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header"><div class="logo"><i class="fas fa-clipboard-list"></i><span>SurveyEarn</span></div></div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+            <a href="surveys.html" class="nav-item"><i class="fas fa-list"></i><span>Surveys</span></a>
+            <a href="referrals.html" class="nav-item"><i class="fas fa-user-friends"></i><span>Referrals</span></a>
+            <a href="settings.html" class="nav-item active"><i class="fas fa-cog"></i><span>Settings</span></a>
+            <a href="help.html" class="nav-item"><i class="fas fa-question-circle"></i><span>Help</span></a>
+        </div>
+        <div class="sidebar-footer"><div class="earn-card"><p>Earned so far</p><h3>Ksh 0</h3><button>Withdraw</button></div></div>
+    </div>
+    <div class="main">
+        <div class="topbar">
+            <div class="page-title"><h1>Settings</h1></div>
+            <div class="user-area"><i class="far fa-bell"></i><div class="avatar">EM</div><span class="user-name">Miracle</span></div>
+        </div>
+        <div class="content">
+            <div class="setting-section">
+                <div class="section-header"><h3>Profile Information</h3></div>
+                <div class="profile-info">
+                    <div class="info-item"><i class="fas fa-user"></i><div><p class="label">Name</p><strong>Ekure-Adzape Miracle</strong></div></div>
+                    <div class="info-item"><i class="fas fa-envelope"></i><div><p class="label">Email</p><strong>goapnaair@gmail.com</strong></div></div>
+                </div>
+            </div>
+            <div class="setting-section">
+                <div class="section-header"><h3>Payment Methods</h3><button class="btn-outline">Add Payment Method</button></div>
+                <div class="empty-payment"><i class="fas fa-mobile-alt"></i><p>No payment methods added yet</p></div>
+            </div>
+            <div class="setting-section">
+                <div class="section-header"><h3>Withdrawal</h3><button class="btn-outline">Withdraw Funds</button></div>
+                <div class="balance-box"><div><p>Available Balance</p><h2 style="font-size:28px;">Ksh 0</h2></div></div>
+            </div>
+            <div class="setting-section">
+                <div class="section-header"><h3>Security</h3><button class="btn-outline">Change Password</button></div>
+                <div class="security-item"><i class="fas fa-lock" style="font-size:24px; color:#4f46e5;"></i><div><p><strong>Password</strong></p><small>Last changed: Never</small></div></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

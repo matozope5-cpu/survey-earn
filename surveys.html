@@ -1,0 +1,112 @@
+<!-- surveys.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SurveyEarn - Surveys</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* base styles same as previous */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#f4f6fa; display:flex; height:100vh; overflow:hidden; }
+        .sidebar { width:280px; background:#fff; border-right:1px solid #eef2f6; display:flex; flex-direction:column; height:100vh; overflow-y:auto; }
+        .sidebar-header { padding:24px 24px 0; margin-bottom:32px; }
+        .logo { display:flex; align-items:center; gap:10px; font-size:22px; font-weight:700; background:linear-gradient(135deg,#4f46e5,#f97316); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .logo i { font-size:24px; background:linear-gradient(135deg,#4f46e5,#f97316); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .nav-menu { flex:1; padding:0 16px; }
+        .nav-item { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:12px; color:#4b5563; font-weight:500; transition:all 0.2s; margin-bottom:6px; text-decoration:none; }
+        .nav-item:hover { background:#f3f4f6; color:#1f2937; }
+        .nav-item.active { background:linear-gradient(135deg,rgba(79,70,229,0.1),rgba(249,115,22,0.1)); color:#4f46e5; }
+        .sidebar-footer { padding:24px 16px; border-top:1px solid #eef2f6; margin-top:auto; }
+        .earn-card { background:linear-gradient(135deg,#4f46e5,#f97316); border-radius:16px; padding:20px; color:#fff; }
+        .earn-card p { font-size:14px; opacity:0.9; margin-bottom:8px; }
+        .earn-card h3 { font-size:28px; font-weight:700; margin-bottom:12px; }
+        .earn-card button { width:100%; background:#fff; border:none; padding:10px; border-radius:10px; font-weight:600; color:#4f46e5; cursor:pointer; }
+        .main { flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+        .topbar { background:#fff; padding:16px 32px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eef2f6; position:sticky; top:0; z-index:5; }
+        .page-title h1 { font-size:24px; font-weight:600; color:#1f2937; }
+        .page-title p { color:#6b7280; font-size:14px; margin-top:4px; }
+        .user-area { display:flex; align-items:center; gap:24px; }
+        .avatar { width:42px; height:42px; background:linear-gradient(135deg,#4f46e5,#f97316); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; cursor:pointer; }
+        .user-name { font-weight:500; color:#1f2937; }
+        .content { flex:1; overflow-y:auto; padding:24px 32px; }
+        .filter-tabs { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+        .filter { padding:8px 20px; background:#fff; border-radius:40px; font-size:14px; font-weight:500; cursor:pointer; transition:0.2s; border:1px solid #eef2f6; }
+        .filter.active { background:#4f46e5; color:#fff; border-color:#4f46e5; }
+        .surveys-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:24px; }
+        .survey-card { background:#fff; border-radius:24px; padding:20px; transition:transform 0.2s, box-shadow 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.04); border:1px solid #eef2f6; }
+        .survey-card:hover { transform:translateY(-4px); box-shadow:0 20px 25px -12px rgba(0,0,0,0.1); }
+        .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+        .card-icon { width:48px; height:48px; background:#f3f4f6; border-radius:16px; display:flex; align-items:center; justify-content:center; color:#4f46e5; font-size:24px; }
+        .crown { color:#fbbf24; font-size:20px; }
+        .survey-title { font-size:18px; font-weight:600; margin:12px 0 4px; }
+        .survey-meta { font-size:13px; color:#6b7280; margin-bottom:12px; }
+        .reward { font-size:20px; font-weight:700; color:#1f2937; margin:12px 0; }
+        .btn-take { background:#4f46e5; border:none; padding:10px 16px; border-radius:12px; color:#fff; font-weight:500; width:100%; cursor:pointer; transition:0.2s; }
+        .btn-take.disabled { background:#d1d5db; cursor:not-allowed; }
+        .survey-time { font-size:12px; color:#9ca3af; margin-top:12px; display:flex; align-items:center; gap:6px; }
+        @media (max-width:1000px){ .sidebar{width:80px} .sidebar .logo span,.sidebar .nav-item span,.sidebar .earn-card p,.sidebar .earn-card h3,.sidebar .earn-card button{display:none} .sidebar .logo i{font-size:28px;margin:0 auto} .nav-item{justify-content:center} .nav-item i{margin:0} }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header"><div class="logo"><i class="fas fa-clipboard-list"></i><span>SurveyEarn</span></div></div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+            <a href="surveys.html" class="nav-item active"><i class="fas fa-list"></i><span>Surveys</span></a>
+            <a href="referrals.html" class="nav-item"><i class="fas fa-user-friends"></i><span>Referrals</span></a>
+            <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+            <a href="help.html" class="nav-item"><i class="fas fa-question-circle"></i><span>Help</span></a>
+        </div>
+        <div class="sidebar-footer"><div class="earn-card"><p>Earned so far</p><h3>Ksh 0</h3><button>Withdraw</button></div></div>
+    </div>
+    <div class="main">
+        <div class="topbar">
+            <div class="page-title"><h1>Available Surveys</h1><p>Complete surveys and earn rewards</p></div>
+            <div class="user-area"><i class="far fa-bell"></i><div class="avatar">EM</div><span class="user-name">Miracle</span></div>
+        </div>
+        <div class="content">
+            <div class="filter-tabs">
+                <div class="filter active">All Surveys</div>
+                <div class="filter">System Surveys</div>
+                <div class="filter">Paid Surveys</div>
+            </div>
+            <div class="surveys-grid">
+                <!-- Sample surveys - dynamic but static for UI -->
+                <div class="survey-card">
+                    <div class="card-header"><div class="card-icon"><i class="fas fa-file-alt"></i></div><i class="fas fa-crown crown"></i></div>
+                    <div class="survey-title">SurveysPlus</div>
+                    <div class="survey-meta">7 questions • Always available</div>
+                    <div class="reward">Ksh 70</div>
+                    <button class="btn-take">Take Survey</button>
+                    <div class="survey-time"><i class="far fa-clock"></i> 11 mins</div>
+                </div>
+                <div class="survey-card">
+                    <div class="card-header"><div class="card-icon"><i class="fas fa-mobile-alt"></i></div><i class="fas fa-crown crown"></i></div>
+                    <div class="survey-title">Safaricom M-PESA</div>
+                    <div class="survey-meta">7 questions</div>
+                    <div class="reward">Ksh 75</div>
+                    <button class="btn-take">Take Survey</button>
+                    <div class="survey-time"><i class="far fa-clock"></i> 11 mins</div>
+                </div>
+                <div class="survey-card">
+                    <div class="card-header"><div class="card-icon"><i class="fas fa-university"></i></div></div>
+                    <div class="survey-title">Equity Bank</div>
+                    <div class="survey-meta">6 questions</div>
+                    <div class="reward">Ksh 50</div>
+                    <button class="btn-take disabled" disabled>Take Survey</button>
+                    <div class="survey-time"><i class="far fa-clock"></i> 9 mins</div>
+                </div>
+                <div class="survey-card"><div class="card-header"><div class="card-icon"><i class="fas fa-plane"></i></div></div><div class="survey-title">Kenya Airways</div><div class="survey-meta">7 questions</div><div class="reward">Ksh 80</div><button class="btn-take">Take Survey</button><div class="survey-time"><i class="far fa-clock"></i> 12 mins</div></div>
+                <div class="survey-card"><div class="card-header"><div class="card-icon"><i class="fas fa-shopping-cart"></i></div></div><div class="survey-title">Jumia Kenya</div><div class="survey-meta">7 questions</div><div class="reward">Ksh 70</div><button class="btn-take">Take Survey</button><div class="survey-time"><i class="far fa-clock"></i> 10 mins</div></div>
+                <div class="survey-card"><div class="card-header"><div class="card-icon"><i class="fas fa-building"></i></div></div><div class="survey-title">KCB Bank</div><div class="survey-meta">7 questions</div><div class="reward">Ksh 68</div><button class="btn-take">Take Survey</button><div class="survey-time"><i class="far fa-clock"></i> 10 mins</div></div>
+                <div class="survey-card"><div class="card-header"><div class="card-icon"><i class="fas fa-utensils"></i></div></div><div class="survey-title">Java House</div><div class="survey-meta">6 questions</div><div class="reward">Ksh 60</div><button class="btn-take">Take Survey</button><div class="survey-time"><i class="far fa-clock"></i> 8 mins</div></div>
+                <div class="survey-card"><div class="card-header"><div class="card-icon"><i class="fas fa-bolt"></i></div></div><div class="survey-title">KPLC</div><div class="survey-meta">6 questions</div><div class="reward">Ksh 66</div><button class="btn-take">Take Survey</button><div class="survey-time"><i class="far fa-clock"></i> 9 mins</div></div>
+                <div class="survey-card"><div class="card-header"><div class="card-icon"><i class="fas fa-tower-cell"></i></div></div><div class="survey-title">Safaricom PLC</div><div class="survey-meta">7 questions</div><div class="reward">Ksh 74</div><button class="btn-take">Take Survey</button><div class="survey-time"><i class="far fa-clock"></i> 11 mins</div></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
