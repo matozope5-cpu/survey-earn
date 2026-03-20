@@ -6,9 +6,10 @@
     <title>SurveyEarn - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css">
     <style>
-        /* ... (all previous styles remain unchanged) ... */
-        /* Keep all existing styles exactly as in the last version */
+        /* ... (all existing styles exactly as in the last dashboard version) ... */
+        /* Keep the exact CSS from the previous polished dashboard */
         * {
             margin: 0;
             padding: 0;
@@ -179,8 +180,7 @@
         }
 
         /* Dropdown styles */
-        .notif-wrapper,
-        .user-wrapper {
+        .notif-wrapper, .user-wrapper {
             position: relative;
         }
 
@@ -361,7 +361,7 @@
             background: #f3f4f6;
         }
 
-        /* Toast notification */
+        /* Toast notification (for non‑critical messages) */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -471,7 +471,6 @@
             color: #6b7280;
             margin-top: 8px;
         }
-        /* Subscription plan styles (unchanged) */
         .subscription-plan {
             border: 1px solid #eef2f6;
             border-radius: 16px;
@@ -479,7 +478,6 @@
             margin-bottom: 16px;
             cursor: pointer;
             transition: all 0.2s;
-            position: relative;
         }
         .subscription-plan:hover {
             border-color: #4f46e5;
@@ -732,7 +730,7 @@
             <div class="earn-card">
                 <p>Earned so far</p>
                 <h3 id="earnCardAmount">Ksh 0</h3>
-                <button>Withdraw</button>
+                <button id="withdrawBtn">Withdraw</button>
             </div>
         </div>
     </div>
@@ -822,7 +820,7 @@
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
 
-    <!-- First Survey Modal -->
+    <!-- First Survey Modal (unchanged) -->
     <div id="firstSurveyModal" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -864,15 +862,23 @@
                 <div class="withdraw-input">
                     <label>M-Pesa Number</label>
                     <input type="tel" id="withdrawPhone" placeholder="07XXXXXXXX">
-                    <div class="withdraw-note">Enter the number where you want to receive the money</div>
                 </div>
                 <button class="btn" id="confirmWithdrawBtn">Request Withdrawal</button>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
+
     <script>
-        // Toast helper
+        // API endpoints
+        const API_ENDPOINTS = {
+            initiatePayment: '/api/initiate-payment',
+            normalizePhone: '/api/normalize-phone',
+            verifyPayment: '/api/verify-payment'
+        };
+
+        // Helper: show simple toast (non‑critical)
         function showToast(message, duration = 3000) {
             const toast = document.getElementById('toast');
             toast.innerText = message;
@@ -998,7 +1004,81 @@
             answers = [];
         }
 
-        // Subscription modal logic (two-step)
+        // ------------------------------------------------------------------
+        // 1. Payment helper functions (STK push)
+        // ------------------------------------------------------------------
+        async function normalizePhoneNumber(phone) {
+            try {
+                const response = await fetch(API_ENDPOINTS.normalizePhone, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: phone })
+                });
+                if (!response.ok) throw new Error();
+                const data = await response.json();
+                return data.normalized_phone || phone;
+            } catch {
+                return phone;
+            }
+        }
+
+        async function initiatePayment(phoneNumber, amount, description) {
+            const response = await fetch(API_ENDPOINTS.initiatePayment, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    phone_number: phoneNumber,
+                    amount: amount,
+                    description: description
+                })
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Payment initiation failed');
+            }
+            return await response.json();
+        }
+
+        async function verifyPayment(reference) {
+            const response = await fetch(`${API_ENDPOINTS.verifyPayment}?reference=${reference}`);
+            if (!response.ok) throw new Error('Verification failed');
+            return await response.json();
+        }
+
+        function pollPaymentStatus(reference, maxAttempts = 10, interval = 4000) {
+            return new Promise((resolve) => {
+                let attempts = 0;
+                const poll = async () => {
+                    attempts++;
+                    try {
+                        const result = await verifyPayment(reference);
+                        const status = result.status || (result.data && result.data.status);
+                        if (status === 'SUCCESS' || status === 'COMPLETED') {
+                            resolve({ success: true, data: result });
+                        } else if (['FAILED', 'CANCELLED', 'TIMEOUT'].includes(status)) {
+                            resolve({ success: false, error: `Payment ${status.toLowerCase()}` });
+                        } else {
+                            if (attempts >= maxAttempts) {
+                                resolve({ success: false, error: 'Payment timeout' });
+                            } else {
+                                setTimeout(poll, interval);
+                            }
+                        }
+                    } catch {
+                        if (attempts >= maxAttempts) {
+                            resolve({ success: false, error: 'Unable to verify' });
+                        } else {
+                            setTimeout(poll, interval);
+                        }
+                    }
+                };
+                poll();
+            });
+        }
+
+        // ------------------------------------------------------------------
+        // 2. Subscription flow (STK push for plan payment)
+        // ------------------------------------------------------------------
         let pendingAction = null;
         let selectedPlan = null;
 
@@ -1016,7 +1096,7 @@
                 <div style="margin-bottom: 20px;">
                     <p>Select a plan that fits your needs. All plans include withdrawals after reaching Ksh 500.</p>
                 </div>
-                <div class="subscription-plan" data-plan="basic">
+                <div class="subscription-plan" data-plan="basic" data-price="99">
                     <div class="plan-header">
                         <span class="plan-name">Basic</span>
                         <span class="plan-price">Ksh 99 / month</span>
@@ -1027,7 +1107,7 @@
                         <li><i class="fas fa-check-circle"></i> Standard support</li>
                     </ul>
                 </div>
-                <div class="subscription-plan" data-plan="standard">
+                <div class="subscription-plan" data-plan="standard" data-price="299">
                     <div class="plan-header">
                         <span class="plan-name">Standard</span>
                         <span class="plan-price">Ksh 299 / month</span>
@@ -1038,7 +1118,7 @@
                         <li><i class="fas fa-check-circle"></i> Priority support</li>
                     </ul>
                 </div>
-                <div class="subscription-plan" data-plan="premium">
+                <div class="subscription-plan" data-plan="premium" data-price="499">
                     <div class="plan-header">
                         <span class="plan-name">Premium</span>
                         <span class="plan-price">Ksh 499 / month</span>
@@ -1056,7 +1136,10 @@
                 plan.addEventListener('click', () => {
                     document.querySelectorAll('.subscription-plan').forEach(p => p.classList.remove('selected'));
                     plan.classList.add('selected');
-                    selectedPlan = plan.getAttribute('data-plan');
+                    selectedPlan = {
+                        name: plan.getAttribute('data-plan'),
+                        price: parseInt(plan.getAttribute('data-price'))
+                    };
                 });
             });
             document.getElementById('nextToMpesa').addEventListener('click', () => {
@@ -1074,33 +1157,85 @@
             document.getElementById('subscriptionModalTitle').innerText = 'Complete Subscription';
             container.innerHTML = `
                 <div style="margin-bottom: 20px;">
-                    <p>You've selected <strong>${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)}</strong> plan.</p>
-                    <p>Enter your M-Pesa number to receive payment notifications and withdrawals.</p>
+                    <p>You've selected <strong>${selectedPlan.name.charAt(0).toUpperCase() + selectedPlan.name.slice(1)}</strong> plan.</p>
+                    <p>Enter your M-Pesa number to pay Ksh ${selectedPlan.price}.</p>
                 </div>
                 <div class="mpesa-input">
-                    <input type="text" id="mpesaNumber" placeholder="M-Pesa number (e.g., 07XXXXXXXX)" />
+                    <input type="tel" id="mpesaNumber" placeholder="07XXXXXXXX" style="width:100%; padding:12px; border:1px solid #eef2f6; border-radius:12px;">
                 </div>
                 <button class="btn" id="confirmSubscription">Subscribe Now</button>
                 <button class="back-btn" id="backToPlans">← Back to plans</button>
             `;
-            document.getElementById('confirmSubscription').addEventListener('click', () => {
-                const mpesa = document.getElementById('mpesaNumber').value.trim();
-                if (!mpesa || !/^07\d{8}$/.test(mpesa)) {
-                    showToast('Enter a valid M-Pesa number (07XXXXXXXX)');
+            document.getElementById('confirmSubscription').addEventListener('click', async () => {
+                const rawPhone = document.getElementById('mpesaNumber').value.trim();
+                if (!rawPhone) {
+                    showToast('Please enter your M-Pesa number');
                     return;
                 }
-                const user = getCurrentUser();
-                if (user) {
-                    user.subscription = { plan: selectedPlan, expiry: Date.now() + 30*24*60*60*1000 };
-                    user.mpesaNumber = mpesa;
-                    updateUser(user);
-                    closeModal('subscriptionModal');
-                    if (pendingAction === 'withdraw') {
-                        // Now that user has a subscription, open withdrawal modal
-                        showWithdrawalModal();
+                // Normalize phone
+                let normalizedPhone;
+                try {
+                    normalizedPhone = await normalizePhoneNumber(rawPhone);
+                } catch {
+                    normalizedPhone = rawPhone;
+                }
+                // Initiate STK push
+                Swal.fire({
+                    title: 'Processing',
+                    html: '<div style="padding:0.5rem;">Please wait...</div>',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+                try {
+                    const paymentResponse = await initiatePayment(
+                        normalizedPhone,
+                        selectedPlan.price,
+                        `SurveyEarn ${selectedPlan.name} Subscription`
+                    );
+                    if (!paymentResponse.reference) throw new Error('No payment reference');
+                    // Show "Check your phone" modal
+                    Swal.fire({
+                        title: 'Request Sent!',
+                        html: `<div style="text-align:center"><i class="fas fa-mobile-alt" style="font-size:2rem;color:#4f46e5;"></i><p>Check your phone</p><p style="font-size:0.9rem;">Enter PIN to complete payment</p></div>`,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+                    // Poll for confirmation
+                    const pollResult = await pollPaymentStatus(paymentResponse.reference);
+                    if (pollResult.success) {
+                        // Payment succeeded → activate subscription
+                        const user = getCurrentUser();
+                        if (user) {
+                            user.subscription = {
+                                plan: selectedPlan.name,
+                                expiry: Date.now() + 30 * 24 * 60 * 60 * 1000
+                            };
+                            user.mpesaNumber = normalizedPhone;
+                            updateUser(user);
+                            closeModal('subscriptionModal');
+                            Swal.fire({
+                                title: 'Subscription Active!',
+                                html: `<div style="text-align:center"><i class="fas fa-check-circle" style="font-size:2rem;color:#10b981;"></i><p>Your ${selectedPlan.name} plan is now active.</p></div>`,
+                                confirmButtonText: 'Great!',
+                                confirmButtonColor: '#4f46e5'
+                            });
+                            if (pendingAction === 'withdraw') {
+                                showWithdrawalModal();
+                            }
+                            pendingAction = null;
+                            selectedPlan = null;
+                        }
+                    } else {
+                        throw new Error(pollResult.error || 'Payment failed');
                     }
-                    pendingAction = null;
-                    selectedPlan = null;
+                } catch (err) {
+                    Swal.fire({
+                        title: 'Payment Failed',
+                        html: `<div style="text-align:center"><i class="fas fa-times-circle" style="font-size:2rem;color:#ef4444;"></i><p>${err.message}</p></div>`,
+                        confirmButtonText: 'Try Again',
+                        confirmButtonColor: '#4f46e5'
+                    });
                 }
             });
             document.getElementById('backToPlans').addEventListener('click', () => {
@@ -1108,7 +1243,9 @@
             });
         }
 
-        // Withdrawal modal logic
+        // ------------------------------------------------------------------
+        // 3. Withdrawal simulation (no real payment, just delay & confirmation)
+        // ------------------------------------------------------------------
         function showWithdrawalModal() {
             const user = getCurrentUser();
             if (!user) return;
@@ -1116,16 +1253,10 @@
                 showToast('Minimum withdrawal is Ksh 500');
                 return;
             }
-            const modal = document.getElementById('withdrawalModal');
-            const balanceInput = document.getElementById('withdrawBalanceDisplay');
-            const amountInput = document.getElementById('withdrawAmount');
-            const phoneInput = document.getElementById('withdrawPhone');
-
-            balanceInput.value = `Ksh ${user.balance}`;
-            amountInput.value = '';
-            phoneInput.value = user.mpesaNumber || '';
-
-            modal.classList.add('active');
+            document.getElementById('withdrawBalanceDisplay').value = `Ksh ${user.balance}`;
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('withdrawPhone').value = user.mpesaNumber || '';
+            document.getElementById('withdrawalModal').classList.add('active');
         }
 
         function processWithdrawal() {
@@ -1148,25 +1279,36 @@
                 return;
             }
 
-            // Deduct balance
-            user.balance -= amount;
-            // You may also want to store withdrawal history, but for demo we just update.
-            updateUser(user);
-            updateDashboardUI(user);
+            // Simulate withdrawal with a delay
+            Swal.fire({
+                title: 'Processing Withdrawal',
+                html: '<div style="padding:0.5rem;">Please wait...</div>',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
 
-            // Close modal
-            closeModal('withdrawalModal');
-
-            // Show success message
-            showToast(`Withdrawal of Ksh ${amount} to ${phone} initiated. Please allow 24 hours for processing.`, 5000);
+            setTimeout(() => {
+                // Deduct balance
+                user.balance -= amount;
+                updateUser(user);
+                updateDashboardUI(user);
+                closeModal('withdrawalModal');
+                Swal.fire({
+                    title: 'Withdrawal Initiated!',
+                    html: `<div style="text-align:center">
+                            <i class="fas fa-clock" style="font-size:2rem;color:#f59e0b;"></i>
+                            <p>Ksh ${amount} will be sent to ${phone}</p>
+                            <p style="font-size:0.85rem;">Please allow 24 hours for processing.</p>
+                           </div>`,
+                    confirmButtonText: 'Got it',
+                    confirmButtonColor: '#4f46e5'
+                });
+            }, 2000);
         }
 
-        // Generic modal close
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        // Dropdowns
+        // ------------------------------------------------------------------
+        // 4. Dropdowns and other UI handlers
+        // ------------------------------------------------------------------
         const notifBtn = document.getElementById('notifBtn');
         const notifMenu = document.getElementById('notifMenu');
         const userBtn = document.getElementById('userBtn');
@@ -1196,7 +1338,7 @@
             window.location.href = 'login.html';
         });
 
-        // Withdraw button handler
+        // Withdraw button (both in stats card and sidebar)
         document.querySelectorAll('.stat-card button, .earn-card button').forEach(btn => {
             btn.addEventListener('click', () => {
                 const user = getCurrentUser();
@@ -1206,7 +1348,6 @@
                     return;
                 }
                 if (!user.subscription) {
-                    // Show subscription modal first
                     showSubscriptionModal('withdraw');
                 } else {
                     showWithdrawalModal();
@@ -1217,7 +1358,9 @@
         // Confirm withdrawal button
         document.getElementById('confirmWithdrawBtn').addEventListener('click', processWithdrawal);
 
-        // Check user and first survey
+        // ------------------------------------------------------------------
+        // 5. Initialization
+        // ------------------------------------------------------------------
         const user = getCurrentUser();
         if (!user) {
             window.location.href = 'login.html';
@@ -1230,10 +1373,14 @@
             }
         }
 
-        // Make functions globally available for modal buttons
+        // Make global functions accessible from inline onclick
         window.closeModal = closeModal;
         window.nextFirstQuestion = nextFirstQuestion;
         window.submitFirstSurvey = submitFirstSurvey;
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
     </script>
 </body>
 </html>
