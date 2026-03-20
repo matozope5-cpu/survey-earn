@@ -144,6 +144,13 @@ label{
 .btn:hover{
     opacity:0.95;
 }
+
+.error-message{
+    color:#dc2626;
+    font-size:13px;
+    margin-top:5px;
+    text-align:left;
+}
 </style>
 
 </head>
@@ -159,7 +166,7 @@ label{
 
     <h1>Sign in to your account</h1>
     <div class="subtitle">
-        Don't have an account? <a href="#">Sign up</a>
+        Don't have an account? <a href="signup.html">Sign up</a>
     </div>
 
     <div class="card">
@@ -168,31 +175,70 @@ label{
             <label>Email address</label>
             <div class="input-box">
                 <i class="fa-regular fa-envelope"></i>
-                <input type="email" placeholder="you@example.com">
+                <input type="email" id="loginEmail" placeholder="you@example.com">
             </div>
+            <div id="emailError" class="error-message"></div>
         </div>
 
         <div class="form-group">
             <label>Password</label>
             <div class="input-box">
                 <i class="fa-solid fa-lock"></i>
-                <input type="password" placeholder="••••••••">
-                <i class="fa-regular fa-eye eye"></i>
+                <input type="password" id="loginPassword" placeholder="••••••••">
+                <i class="fa-regular fa-eye eye" id="togglePassword"></i>
             </div>
+            <div id="passwordError" class="error-message"></div>
         </div>
 
         <div class="row">
-            <label><input type="checkbox"> Remember me</label>
+            <label><input type="checkbox" id="rememberMe"> Remember me</label>
             <a href="#">Forgot your password?</a>
         </div>
 
-        <button class="btn">
+        <button class="btn" id="loginBtn">
             Sign in <i class="fa-solid fa-arrow-right"></i>
         </button>
 
     </div>
 
 </div>
+
+<script>
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const pwd = document.getElementById('loginPassword');
+        if (pwd.type === 'password') { pwd.type = 'text'; this.classList.remove('fa-eye'); this.classList.add('fa-eye-slash'); }
+        else { pwd.type = 'password'; this.classList.remove('fa-eye-slash'); this.classList.add('fa-eye'); }
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', function() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        let error = false;
+        document.getElementById('emailError').innerHTML = '';
+        document.getElementById('passwordError').innerHTML = '';
+
+        if (!email) { document.getElementById('emailError').innerHTML = 'Email is required'; error = true; }
+        else if (!email.includes('@') || !email.includes('.')) { document.getElementById('emailError').innerHTML = 'Invalid email format'; error = true; }
+        if (!password) { document.getElementById('passwordError').innerHTML = 'Password is required'; error = true; }
+        if (error) return;
+
+        // Get users from localStorage
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        const user = users.find(u => u.email === email && u.password === password);
+        if (!user) {
+            document.getElementById('passwordError').innerHTML = 'Invalid email or password';
+            return;
+        }
+
+        // Store session
+        sessionStorage.setItem('loggedInUser', JSON.stringify({ email: user.email, name: user.name }));
+        if (document.getElementById('rememberMe').checked) {
+            localStorage.setItem('rememberedUser', JSON.stringify({ email: user.email, name: user.name }));
+        }
+        window.location.href = 'dashboard.html';
+    });
+</script>
 
 </body>
 </html>
