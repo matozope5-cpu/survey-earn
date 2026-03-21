@@ -51,6 +51,7 @@ body {
     border: none;
     font-size: 0.95rem;
     gap: 0.5rem;
+    text-decoration: none;
 }
 
 .btn-primary {
@@ -291,6 +292,27 @@ nav {
     font-size: 6rem;
     color: white;
     opacity: 0.8;
+}
+
+/* Mobile auth buttons (visible only on small screens) */
+.mobile-auth-buttons {
+    display: none;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.mobile-auth-buttons .btn {
+    width: 100%;
+    justify-content: center;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.mobile-auth-buttons .btn-primary {
+    background: linear-gradient(135deg, #4f46e5, #f97316);
+    border: none;
 }
 
 /* ===== How It Works ===== */
@@ -651,6 +673,11 @@ footer {
     }
     .hero-buttons {
         justify-content: center;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .hero-buttons .btn {
+        width: 100%;
     }
     .stats {
         justify-content: center;
@@ -667,6 +694,10 @@ footer {
     }
     .contact-grid {
         grid-template-columns: 1fr;
+    }
+    /* Show mobile auth buttons */
+    .mobile-auth-buttons {
+        display: flex;
     }
 }
 
@@ -733,6 +764,11 @@ footer {
             <div class="hero-buttons">
                 <a href="login.html" class="btn btn-primary" id="heroCta">Start Earning Now <i class="fas fa-arrow-right"></i></a>
                 <button class="btn btn-outline">Learn More</button>
+            </div>
+            <!-- Mobile auth buttons - visible only on small screens -->
+            <div class="mobile-auth-buttons">
+                <a href="login.html" class="btn btn-outline">Login</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
             </div>
             <div class="stats">
                 <div class="stat-item"><h3>10K+</h3><p>Active Users</p></div>
@@ -882,6 +918,27 @@ footer {
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">Surveys target specific demographics based on our clients' research needs. If you're disqualified, it simply means you don't match the specific criteria for that particular survey. Don't worry – this is normal and happens to everyone.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section class="section" id="contact">
+    <div class="container">
+        <h2 class="section-title">Contact Us</h2>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3>Get in Touch</h3>
+                <p><i class="fas fa-envelope"></i> support@surveyearn.com</p>
+                <p><i class="fas fa-phone"></i> +254 700 123 456</p>
+                <p><i class="fas fa-clock"></i> Mon-Fri, 9am-5pm</p>
+            </div>
+            <div class="contact-form">
+                <input type="text" id="contactName" placeholder="Your Name">
+                <input type="email" id="contactEmail" placeholder="Your Email">
+                <textarea rows="4" id="contactMessage" placeholder="Your Message"></textarea>
+                <button class="btn btn-primary" id="sendMessageBtn">Send Message</button>
             </div>
         </div>
     </div>
