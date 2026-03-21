@@ -346,9 +346,14 @@
             color: #0284c7;
         }
 
-        .badge.paid {
+        .badge.standard {
             background: #fef3c7;
             color: #d97706;
+        }
+
+        .badge.premium {
+            background: #f1e5ff;
+            color: #7c3aed;
         }
 
         .survey-title {
@@ -621,6 +626,15 @@
             font-size: 12px;
             color: #10b981;
         }
+        .required-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            background: #fef3c7;
+            color: #d97706;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
         .mpesa-input {
             margin: 16px 0;
         }
@@ -828,8 +842,9 @@
         <div class="content">
             <div class="filter-tabs">
                 <div class="filter active">All Surveys</div>
-                <div class="filter">System Surveys</div>
-                <div class="filter">Paid Surveys</div>
+                <div class="filter">Free</div>
+                <div class="filter">Standard</div>
+                <div class="filter">Premium</div>
             </div>
             <div class="surveys-grid" id="surveysGrid"></div>
         </div>
@@ -923,17 +938,17 @@
             sessionStorage.setItem('loggedInUser', JSON.stringify({ email: user.email, name: user.name }));
         }
 
-        // Predefined surveys
+        // Predefined surveys with required plan
         const surveys = [
-            { id: 'surveysplus', title: 'SurveysPlus', reward: 170, type: 'free', questions: generateQuestions(), time: '11 mins' },
-            { id: 'safaricom', title: 'Safaricom M-PESA', reward: 175, type: 'free', questions: generateQuestions(), time: '11 mins' },
-            { id: 'market_research', title: 'Market Research', reward: 199, type: 'free', questions: generateQuestions(), time: '13 mins' },
-            { id: 'equity', title: 'Equity Bank', reward: 350, type: 'premium', questions: generateQuestions(), time: '9 mins' },
-            { id: 'kenya_airways', title: 'Kenya Airways', reward: 499, type: 'premium', questions: generateQuestions(), time: '12 mins' },
-            { id: 'jumia', title: 'Jumia Kenya', reward: 670, type: 'premium', questions: generateQuestions(), time: '10 mins' },
-            { id: 'kcb', title: 'KCB Bank', reward: 468, type: 'premium', questions: generateQuestions(), time: '10 mins' },
-            { id: 'java_house', title: 'Java House', reward: 760, type: 'premium', questions: generateQuestions(), time: '8 mins' },
-            { id: 'kplc', title: 'KPLC', reward: 566, type: 'premium', questions: generateQuestions(), time: '9 mins' }
+            { id: 'surveysplus', title: 'SurveysPlus', reward: 170, requiredPlan: 'free', questions: generateQuestions(), time: '11 mins' },
+            { id: 'safaricom', title: 'Safaricom M-PESA', reward: 175, requiredPlan: 'standard', questions: generateQuestions(), time: '11 mins' },
+            { id: 'market_research', title: 'Market Research', reward: 199, requiredPlan: 'standard', questions: generateQuestions(), time: '13 mins' },
+            { id: 'equity', title: 'Equity Bank', reward: 350, requiredPlan: 'standard', questions: generateQuestions(), time: '9 mins' },
+            { id: 'kcb', title: 'KCB Bank', reward: 468, requiredPlan: 'standard', questions: generateQuestions(), time: '10 mins' },
+            { id: 'kenya_airways', title: 'Kenya Airways', reward: 499, requiredPlan: 'premium', questions: generateQuestions(), time: '12 mins' },
+            { id: 'jumia', title: 'Jumia Kenya', reward: 670, requiredPlan: 'premium', questions: generateQuestions(), time: '10 mins' },
+            { id: 'java_house', title: 'Java House', reward: 760, requiredPlan: 'premium', questions: generateQuestions(), time: '8 mins' },
+            { id: 'kplc', title: 'KPLC', reward: 566, requiredPlan: 'premium', questions: generateQuestions(), time: '9 mins' }
         ];
 
         function generateQuestions() {
@@ -953,11 +968,13 @@
             const grid = document.getElementById('surveysGrid');
             grid.innerHTML = surveys.map(s => {
                 const completed = user && user.completedSurveys && user.completedSurveys.includes(s.id);
+                const badgeClass = s.requiredPlan === 'free' ? 'free' : (s.requiredPlan === 'standard' ? 'standard' : 'premium');
+                const badgeText = s.requiredPlan === 'free' ? 'Free' : (s.requiredPlan === 'standard' ? 'Standard' : 'Premium');
                 return `
                     <div class="survey-card ${completed ? 'completed' : ''}" data-id="${s.id}">
                         <div class="card-header">
-                            <div class="card-icon"><i class="fas ${s.type === 'free' ? 'fa-file-alt' : 'fa-star'}"></i></div>
-                            <div class="badge ${s.type === 'free' ? 'free' : 'paid'}">${s.type === 'free' ? 'Free' : 'Premium'}</div>
+                            <div class="card-icon"><i class="fas ${s.requiredPlan === 'free' ? 'fa-file-alt' : 'fa-star'}"></i></div>
+                            <div class="badge ${badgeClass}">${badgeText}</div>
                         </div>
                         <div class="survey-title">${s.title}</div>
                         <div class="survey-meta">${s.questions.length} questions</div>
@@ -967,7 +984,7 @@
                     </div>
                 `;
             }).join('');
-            // Attach event listeners to buttons (including disabled ones for toast)
+            // Attach event listeners to buttons
             document.querySelectorAll('.btn-take').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -981,11 +998,22 @@
                         showToast('You have already completed this survey');
                         return;
                     }
-                    if (survey.type === 'premium') {
-                        if (!user.subscription) showSubscriptionModal({ surveyId, reward: survey.reward });
-                        else startSurvey(survey);
-                    } else {
+                    // Check access based on required plan
+                    const userPlan = user.subscription ? user.subscription.plan : null;
+                    if (survey.requiredPlan === 'free') {
                         startSurvey(survey);
+                    } else if (survey.requiredPlan === 'standard') {
+                        if (userPlan === 'standard' || userPlan === 'premium') {
+                            startSurvey(survey);
+                        } else {
+                            showSubscriptionModal({ surveyId: survey.id, requiredPlan: 'standard' });
+                        }
+                    } else if (survey.requiredPlan === 'premium') {
+                        if (userPlan === 'premium') {
+                            startSurvey(survey);
+                        } else {
+                            showSubscriptionModal({ surveyId: survey.id, requiredPlan: 'premium' });
+                        }
                     }
                 });
             });
@@ -1027,7 +1055,6 @@
                 container.innerHTML = html;
                 modal.classList.add('active');
 
-                // Attach event listeners
                 const nextBtn = document.getElementById('nextSurveyBtn');
                 const submitBtn = document.getElementById('submitSurveyBtn');
                 if (nextBtn) nextBtn.addEventListener('click', () => handleNext());
@@ -1047,7 +1074,7 @@
             surveyTimer = setTimeout(() => {
                 currentQIndex++;
                 showSurveyQuestion();
-            }, 2000); // 2-second delay
+            }, 2000);
         }
 
         function handleSubmit() {
@@ -1061,7 +1088,7 @@
             if (surveyTimer) clearTimeout(surveyTimer);
             surveyTimer = setTimeout(() => {
                 processFinalReward();
-            }, 5000); // 5-second delay before reward
+            }, 5000);
         }
 
         function showLoadingInModal(message) {
@@ -1083,11 +1110,9 @@
                 user.surveysCompleted += 1;
                 user.completedSurveys.push(currentSurvey.id);
                 updateUser(user);
-                // Update UI in background
                 updateUserUI(user);
-                renderSurveys(); // re-render to mark as completed
+                renderSurveys();
                 closeModal('surveyModal');
-                // Show success modal with reward
                 Swal.fire({
                     title: '🎉 Survey Completed!',
                     html: `
@@ -1180,22 +1205,31 @@
         }
 
         // ------------------------------------------------------------------
-        // Subscription modal with STK push (with proper feedback)
+        // Subscription modal with STK push and required plan pre‑selection
         // ------------------------------------------------------------------
         let pendingAction = null;
         let selectedPlan = null;
 
         function showSubscriptionModal(action) {
-            pendingAction = action;
+            pendingAction = action; // action = { surveyId, requiredPlan }
             selectedPlan = null;
+            // Pre-select plan based on required plan if provided
             showPlanSelection();
         }
 
         function showPlanSelection() {
             const modal = document.getElementById('subscriptionModal');
             const container = document.getElementById('subscriptionContent');
+            const required = pendingAction ? pendingAction.requiredPlan : null;
+            let message = '';
+            if (required === 'standard') {
+                message = '<div style="margin-bottom: 20px; background: #fef3c7; padding: 12px; border-radius: 12px;"><i class="fas fa-info-circle"></i> This survey requires a <strong>Standard</strong> or <strong>Premium</strong> plan.</div>';
+            } else if (required === 'premium') {
+                message = '<div style="margin-bottom: 20px; background: #f1e5ff; padding: 12px; border-radius: 12px;"><i class="fas fa-info-circle"></i> This survey requires a <strong>Premium</strong> plan.</div>';
+            }
             document.getElementById('subscriptionModalTitle').innerText = 'Choose a Subscription Plan';
             container.innerHTML = `
+                ${message}
                 <div style="margin-bottom: 20px;">
                     <p>Select a plan that fits your needs. All plans include withdrawals after reaching Ksh 500.</p>
                 </div>
@@ -1235,7 +1269,17 @@
                 </div>
                 <button class="next-btn" id="nextToMpesa">Continue</button>
             `;
-            document.querySelectorAll('.subscription-plan').forEach(plan => {
+            // Highlight the recommended plan if required
+            const planElements = document.querySelectorAll('.subscription-plan');
+            planElements.forEach(plan => {
+                const planName = plan.getAttribute('data-plan');
+                if (required === 'standard' && planName === 'standard') {
+                    plan.classList.add('selected');
+                    selectedPlan = { name: 'standard', price: 299 };
+                } else if (required === 'premium' && planName === 'premium') {
+                    plan.classList.add('selected');
+                    selectedPlan = { name: 'premium', price: 499 };
+                }
                 plan.addEventListener('click', () => {
                     document.querySelectorAll('.subscription-plan').forEach(p => p.classList.remove('selected'));
                     plan.classList.add('selected');
@@ -1294,7 +1338,6 @@
                         `SurveyEarn ${selectedPlan.name} Subscription`
                     );
                     if (!paymentResponse.reference) throw new Error('No payment reference');
-                    // Show "Check your phone" modal
                     Swal.fire({
                         title: 'Request Sent!',
                         html: `<div style="text-align:center"><i class="fas fa-mobile-alt" style="font-size:2rem;color:#4f46e5;"></i><p>Check your phone</p><p style="font-size:0.9rem;">Enter PIN to complete payment</p></div>`,
@@ -1302,7 +1345,6 @@
                         timerProgressBar: true,
                         showConfirmButton: false
                     });
-                    // Show verification progress modal
                     Swal.fire({
                         title: 'Verifying Payment',
                         html: '<div class="loading-spinner" style="padding:1rem;"><i class="fas fa-spinner fa-pulse fa-2x"></i><p style="margin-top:12px">Please wait while we confirm your payment...</p></div>',
@@ -1410,7 +1452,6 @@
                     confirmButtonText: 'Got it',
                     confirmButtonColor: '#4f46e5'
                 });
-                // Update earn card amount
                 document.getElementById('earnCardAmount').innerText = `Ksh ${user.earningsTotal}`;
             }, 2000);
         }
@@ -1447,7 +1488,6 @@
             if (!userBtn.contains(event.target) && !userMenu.contains(event.target)) userMenu.classList.remove('show');
         });
 
-        // Settings and Logout
         document.getElementById('settingsMenuItem').addEventListener('click', () => {
             window.location.href = 'settings.html';
         });
@@ -1457,7 +1497,6 @@
             window.location.href = 'login.html';
         });
 
-        // Withdraw button (sidebar)
         document.getElementById('withdrawBtn').addEventListener('click', () => {
             const user = getCurrentUser();
             if (!user) return;
@@ -1472,15 +1511,30 @@
             }
         });
 
-        // Confirm withdrawal button
         document.getElementById('confirmWithdrawBtn').addEventListener('click', processWithdrawal);
 
-        // Filter tabs (demo)
+        // Filter tabs
         document.querySelectorAll('.filter').forEach(filter => {
             filter.addEventListener('click', () => {
                 document.querySelectorAll('.filter').forEach(f => f.classList.remove('active'));
                 filter.classList.add('active');
-                // Here you would filter surveys – demo only
+                const filterText = filter.innerText.toLowerCase();
+                const grid = document.getElementById('surveysGrid');
+                const cards = document.querySelectorAll('.survey-card');
+                cards.forEach((card, idx) => {
+                    const survey = surveys[idx];
+                    if (filterText === 'all surveys') {
+                        card.style.display = '';
+                    } else if (filterText === 'free' && survey.requiredPlan === 'free') {
+                        card.style.display = '';
+                    } else if (filterText === 'standard' && survey.requiredPlan === 'standard') {
+                        card.style.display = '';
+                    } else if (filterText === 'premium' && survey.requiredPlan === 'premium') {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
             });
         });
 
@@ -1493,15 +1547,11 @@
             renderSurveys();
         }
 
-        // Make functions globally available for modal buttons
         window.closeModal = closeModal;
-        window.nextSurveyQuestion = nextSurveyQuestion;
-        window.submitSurvey = submitSurvey;
-
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
         }
-        // Keep legacy function names for compatibility (though not used)
+        // Legacy function names
         function nextSurveyQuestion() { handleNext(); }
         function submitSurvey() { handleSubmit(); }
     </script>
