@@ -549,66 +549,86 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Mobile balance card (only visible on mobile) */
+        .mobile-balance-card {
+            display: none;
+            background: linear-gradient(135deg, #4f46e5, #f97316);
+            border-radius: 20px;
+            padding: 20px;
+            color: #fff;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .mobile-balance-card p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        .mobile-balance-card h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .mobile-balance-card button {
+            background: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #4f46e5;
+            cursor: pointer;
+            transition: 0.2s;
+            width: auto;
+        }
+
+        /* Bottom navigation bar (mobile only) */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-top: 1px solid #eef2f6;
+            padding: 10px 0;
+            z-index: 100;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #6b7280;
+            font-size: 12px;
+            transition: color 0.2s;
+            gap: 4px;
+        }
+        .nav-link i {
+            font-size: 22px;
+        }
+        .nav-link.active {
+            color: #4f46e5;
+        }
+        .nav-link span {
+            font-size: 10px;
+        }
+
         /* Mobile optimizations */
         @media (max-width: 768px) {
             .sidebar {
-                width: 60px;
-            }
-            .sidebar .logo span,
-            .sidebar .nav-item span {
                 display: none;
             }
-            .sidebar .logo i {
-                font-size: 24px;
-                margin: 0 auto;
+            .bottom-nav {
+                display: flex;
             }
-            .nav-item {
-                justify-content: center;
-                padding: 12px;
+            .main {
+                margin-bottom: 70px;
             }
-            .nav-item i {
-                margin: 0;
-                font-size: 20px;
-            }
-            .sidebar-header {
-                padding: 20px 0;
-                text-align: center;
-            }
-            .sidebar-footer {
-                padding: 16px 8px;
-            }
-            .earn-card {
-                padding: 8px;
-                text-align: center;
-            }
-            .earn-card p {
-                display: none;
-            }
-            .earn-card h3 {
-                font-size: 18px;
-                margin-bottom: 8px;
-            }
-            .earn-card button {
-                width: auto;
-                padding: 4px 8px;
-                font-size: 11px;
-            }
-            .topbar {
-                padding: 12px 16px;
-            }
-            .page-title h1 {
-                font-size: 20px;
-            }
-            .user-area {
-                gap: 12px;
-            }
-            .avatar {
-                width: 36px;
-                height: 36px;
-                font-size: 14px;
-            }
-            .content {
-                padding: 16px;
+            .mobile-balance-card {
+                display: block;
             }
             .profile-info {
                 flex-direction: column;
@@ -626,6 +646,24 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 12px;
+            }
+            .topbar {
+                padding: 12px 16px;
+            }
+            .page-title h1 {
+                font-size: 20px;
+            }
+            .user-area {
+                gap: 12px;
+            }
+            .avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+            .content {
+                padding: 16px;
+                padding-bottom: 80px;
             }
         }
 
@@ -694,6 +732,13 @@
         </div>
 
         <div class="content">
+            <!-- Mobile balance card -->
+            <div class="mobile-balance-card" id="mobileBalanceCard">
+                <p>Earned so far</p>
+                <h3 id="mobileEarnAmount">Ksh 0</h3>
+                <button id="mobileWithdrawBtn">Withdraw</button>
+            </div>
+
             <div class="setting-section">
                 <div class="section-header">
                     <h3>Profile Information</h3>
@@ -743,6 +788,30 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Bottom navigation bar (mobile only) -->
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-link">
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="surveys.html" class="nav-link">
+            <i class="fas fa-list"></i>
+            <span>Surveys</span>
+        </a>
+        <a href="referrals.html" class="nav-link">
+            <i class="fas fa-user-friends"></i>
+            <span>Referrals</span>
+        </a>
+        <a href="settings.html" class="nav-link active">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </a>
+        <a href="help.html" class="nav-link">
+            <i class="fas fa-question-circle"></i>
+            <span>Help</span>
+        </a>
     </div>
 
     <!-- Toast notification -->
@@ -852,6 +921,7 @@
             document.getElementById('profileEmail').innerText = user.email;
             document.getElementById('balanceDisplay').innerText = `Ksh ${user.balance}`;
             document.getElementById('earnCardAmount').innerText = `Ksh ${user.earningsTotal}`;
+            document.getElementById('mobileEarnAmount').innerText = `Ksh ${user.earningsTotal}`;
             const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
             document.querySelector('.avatar').innerText = initials;
             document.getElementById('userNameStrong').innerText = user.name;
@@ -1156,6 +1226,7 @@
                     confirmButtonColor: '#4f46e5'
                 });
                 document.getElementById('earnCardAmount').innerText = `Ksh ${user.earningsTotal}`;
+                document.getElementById('mobileEarnAmount').innerText = `Ksh ${user.earningsTotal}`;
             }, 2000);
         }
 
@@ -1242,7 +1313,22 @@
                 showWithdrawalModal();
             }
         });
+
         document.getElementById('withdrawSettingsBtn').addEventListener('click', () => {
+            const user = getCurrentUser();
+            if (!user) return;
+            if (user.balance < 500) {
+                showToast('Minimum withdrawal is Ksh 500');
+                return;
+            }
+            if (!user.subscription) {
+                showSubscriptionModal('withdraw');
+            } else {
+                showWithdrawalModal();
+            }
+        });
+
+        document.getElementById('mobileWithdrawBtn').addEventListener('click', () => {
             const user = getCurrentUser();
             if (!user) return;
             if (user.balance < 500) {
