@@ -297,6 +297,21 @@
             box-shadow: 0 20px 25px -12px rgba(0,0,0,0.1);
         }
 
+        /* Completed survey styling */
+        .survey-card.completed {
+            opacity: 0.7;
+            background: #f9fafb;
+            border-color: #e5e7eb;
+        }
+        .survey-card.completed .btn-take {
+            background: #9ca3af;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .survey-card.completed .btn-take.disabled {
+            background: #9ca3af;
+        }
+
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -539,6 +554,22 @@
         .next-btn:hover, .submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(79,70,229,0.3);
+        }
+
+        /* Loading spinner for delays */
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+            color: #4f46e5;
+        }
+        .loading-spinner i {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         /* Subscription plan styles (identical) */
@@ -920,26 +951,36 @@
         function renderSurveys() {
             const user = getCurrentUser();
             const grid = document.getElementById('surveysGrid');
-            grid.innerHTML = surveys.map(s => `
-                <div class="survey-card">
-                    <div class="card-header">
-                        <div class="card-icon"><i class="fas ${s.type === 'free' ? 'fa-file-alt' : 'fa-star'}"></i></div>
-                        <div class="badge ${s.type === 'free' ? 'free' : 'paid'}">${s.type === 'free' ? 'Free' : 'Premium'}</div>
+            grid.innerHTML = surveys.map(s => {
+                const completed = user && user.completedSurveys && user.completedSurveys.includes(s.id);
+                return `
+                    <div class="survey-card ${completed ? 'completed' : ''}" data-id="${s.id}">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas ${s.type === 'free' ? 'fa-file-alt' : 'fa-star'}"></i></div>
+                            <div class="badge ${s.type === 'free' ? 'free' : 'paid'}">${s.type === 'free' ? 'Free' : 'Premium'}</div>
+                        </div>
+                        <div class="survey-title">${s.title}</div>
+                        <div class="survey-meta">${s.questions.length} questions</div>
+                        <div class="reward">Reward Ksh ${s.reward}</div>
+                        <button class="btn-take ${completed ? 'disabled' : ''}" data-id="${s.id}" ${completed ? 'disabled' : ''}>${completed ? 'Completed' : 'Take Survey'}</button>
+                        <div class="survey-time"><i class="far fa-clock"></i> ${s.time}</div>
                     </div>
-                    <div class="survey-title">${s.title}</div>
-                    <div class="survey-meta">${s.questions.length} questions</div>
-                    <div class="reward">Reward Ksh ${s.reward}</div>
-                    <button class="btn-take" data-id="${s.id}" ${user && user.completedSurveys.includes(s.id) ? 'disabled' : ''}>${user && user.completedSurveys.includes(s.id) ? 'Completed' : 'Take Survey'}</button>
-                    <div class="survey-time"><i class="far fa-clock"></i> ${s.time}</div>
-                </div>
-            `).join('');
-            document.querySelectorAll('.btn-take:not([disabled])').forEach(btn => {
+                `;
+            }).join('');
+            // Attach event listeners to buttons (including disabled ones for toast)
+            document.querySelectorAll('.btn-take').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     const surveyId = btn.getAttribute('data-id');
                     const survey = surveys.find(s => s.id === surveyId);
                     if (!survey) return;
                     const user = getCurrentUser();
                     if (!user) { window.location.href = 'login.html'; return; }
+                    // Check if already completed
+                    if (user.completedSurveys && user.completedSurveys.includes(survey.id)) {
+                        showToast('You have already completed this survey');
+                        return;
+                    }
                     if (survey.type === 'premium') {
                         if (!user.subscription) showSubscriptionModal({ surveyId, reward: survey.reward });
                         else startSurvey(survey);
@@ -953,6 +994,7 @@
         let currentSurvey = null;
         let currentQIndex = 0;
         let surveyAnswers = [];
+        let surveyTimer = null;
 
         function startSurvey(survey) {
             currentSurvey = survey;
@@ -978,46 +1020,91 @@
                 });
                 html += `</div></div>`;
                 if (currentQIndex < currentSurvey.questions.length - 1) {
-                    html += `<button class="next-btn" onclick="nextSurveyQuestion()">Next</button>`;
+                    html += `<button class="next-btn" id="nextSurveyBtn">Next</button>`;
                 } else {
-                    html += `<button class="submit-btn" onclick="submitSurvey()">Complete Survey</button>`;
+                    html += `<button class="submit-btn" id="submitSurveyBtn">Complete Survey</button>`;
                 }
                 container.innerHTML = html;
                 modal.classList.add('active');
+
+                // Attach event listeners
+                const nextBtn = document.getElementById('nextSurveyBtn');
+                const submitBtn = document.getElementById('submitSurveyBtn');
+                if (nextBtn) nextBtn.addEventListener('click', () => handleNext());
+                if (submitBtn) submitBtn.addEventListener('click', () => handleSubmit());
             }
         }
 
-        function nextSurveyQuestion() {
+        function handleNext() {
             const selected = document.querySelector(`input[name="q${currentQIndex}"]:checked`);
             if (!selected) {
                 showToast('Please select an answer');
                 return;
             }
             surveyAnswers[currentQIndex] = selected.value;
-            currentQIndex++;
-            showSurveyQuestion();
+            showLoadingInModal('Loading next question...');
+            if (surveyTimer) clearTimeout(surveyTimer);
+            surveyTimer = setTimeout(() => {
+                currentQIndex++;
+                showSurveyQuestion();
+            }, 2000); // 2-second delay
         }
 
-        function submitSurvey() {
+        function handleSubmit() {
             const selected = document.querySelector(`input[name="q${currentQIndex}"]:checked`);
             if (!selected) {
                 showToast('Please select an answer');
                 return;
             }
             surveyAnswers[currentQIndex] = selected.value;
+            showLoadingInModal('Submitting your answers...');
+            if (surveyTimer) clearTimeout(surveyTimer);
+            surveyTimer = setTimeout(() => {
+                processFinalReward();
+            }, 5000); // 5-second delay before reward
+        }
 
+        function showLoadingInModal(message) {
+            const container = document.getElementById('surveyQuestionsContainer');
+            container.innerHTML = `
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-pulse"></i>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function processFinalReward() {
             const user = getCurrentUser();
             if (user && !user.completedSurveys.includes(currentSurvey.id)) {
-                user.earningsTotal += currentSurvey.reward;
-                user.balance += currentSurvey.reward;
+                const reward = currentSurvey.reward;
+                user.earningsTotal += reward;
+                user.balance += reward;
                 user.surveysCompleted += 1;
                 user.completedSurveys.push(currentSurvey.id);
                 updateUser(user);
-                showToast(`Survey completed! You earned Ksh ${currentSurvey.reward}`);
-                document.getElementById('earnCardAmount').innerText = `Ksh ${user.earningsTotal}`;
+                // Update UI in background
+                updateUserUI(user);
+                renderSurveys(); // re-render to mark as completed
+                closeModal('surveyModal');
+                // Show success modal with reward
+                Swal.fire({
+                    title: '🎉 Survey Completed!',
+                    html: `
+                        <div style="text-align:center">
+                            <i class="fas fa-check-circle" style="font-size:3rem;color:#10b981;margin-bottom:12px"></i>
+                            <h3 style="margin:8px 0">You earned Ksh ${reward}!</h3>
+                            <p>Thank you for sharing your feedback.</p>
+                        </div>
+                    `,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4f46e5',
+                    allowOutsideClick: false
+                });
+            } else {
+                closeModal('surveyModal');
+                Swal.fire('Info', 'Survey already completed!', 'info');
             }
-            closeModal('surveyModal');
-            renderSurveys();
         }
 
         // ------------------------------------------------------------------
@@ -1093,7 +1180,7 @@
         }
 
         // ------------------------------------------------------------------
-        // Subscription modal with STK push
+        // Subscription modal with STK push (with proper feedback)
         // ------------------------------------------------------------------
         let pendingAction = null;
         let selectedPlan = null;
@@ -1188,14 +1275,12 @@
                     showToast('Please enter your M-Pesa number');
                     return;
                 }
-                // Normalize phone
                 let normalizedPhone;
                 try {
                     normalizedPhone = await normalizePhoneNumber(rawPhone);
                 } catch {
                     normalizedPhone = rawPhone;
                 }
-                // Initiate STK push
                 Swal.fire({
                     title: 'Processing',
                     html: '<div style="padding:0.5rem;">Please wait...</div>',
@@ -1217,10 +1302,17 @@
                         timerProgressBar: true,
                         showConfirmButton: false
                     });
-                    // Poll for confirmation
+                    // Show verification progress modal
+                    Swal.fire({
+                        title: 'Verifying Payment',
+                        html: '<div class="loading-spinner" style="padding:1rem;"><i class="fas fa-spinner fa-pulse fa-2x"></i><p style="margin-top:12px">Please wait while we confirm your payment...</p></div>',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => Swal.showLoading()
+                    });
                     const pollResult = await pollPaymentStatus(paymentResponse.reference);
+                    Swal.close();
                     if (pollResult.success) {
-                        // Payment succeeded → activate subscription
                         const user = getCurrentUser();
                         if (user) {
                             user.subscription = {
@@ -1409,6 +1501,9 @@
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
         }
+        // Keep legacy function names for compatibility (though not used)
+        function nextSurveyQuestion() { handleNext(); }
+        function submitSurvey() { handleSubmit(); }
     </script>
 </body>
 </html>
